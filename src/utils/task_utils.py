@@ -174,6 +174,7 @@ class VQATextAProcessor(DataProcessor):
             examples.append(InputInstance(guid=guid, text_a=text_a, text_b=text_b, label=label, score=score, img_key=img_key, q_id=q_id))
         return examples
 
+
 class GQAProcessor(DataProcessor):
     """ Processor for the GQA data set. """
 
@@ -184,6 +185,10 @@ class GQAProcessor(DataProcessor):
         return self._create_examples(lines, "train")
 
         #return self._create_examples(self._read_tsv(os.path.join(data_dir, "train2014_qla.tsv")), "train")
+
+    def get_train_caption_examples(self, data_dir, file_name='annotations/captions_train2014.json'):
+        lines = json.load(open(os.path.join(data_dir, file_name)))
+        return self._create_caption_examples(lines, "train")
 
     def get_dev_examples(self, data_dir, file_name='val2014_qla.json'):
         """ See base class."""
@@ -221,6 +226,19 @@ class GQAProcessor(DataProcessor):
             q_id = int(line['q_id']) if set_type.startswith('test') else 0
             examples.append(InputInstance(guid=guid, text_a=text_a, text_b=text_b, label=label, score=score, img_key=img_key, q_id=q_id))
         return examples
+
+    def _create_caption_examples(self, annotations, set_type):
+        examples = []
+
+        for (i, caption) in enumerate(annotations['annotations']):
+            caption_str = caption['caption']
+            for img in annotations['images']:
+                if caption['image_id'] == img['id']:
+                    img_key = img['file_name'].split(".")[0]
+                    break
+            #print()
+
+
 
 class NLVRProcessor(DataProcessor):
     """ Processor for the NLVR data set. """

@@ -37,6 +37,9 @@ def _load_dataset(args, name):
             examples = processor.get_dev_examples(args.data_dir, 'gqa_bal_qla_testdev.json')
         else:
             examples = processor.get_dev_examples(args.data_dir, 'gqa_all_qla_testdev.json')
+    elif name == "my_test":
+        examples = processor.get_train_caption_examples(args.data_dir, 'annotations/captions_train2014.json')
+
 
     return examples, labels
 
@@ -72,7 +75,7 @@ class GQADataset(Dataset):
 
     def __init__(self, args, name, img_features, tokenizer, label_pos_feats=None):
         super(GQADataset, self).__init__()
-        assert name in ['train', 'val', 'test-dev', 'test', 'train+val']
+        assert name in ['train', 'val', 'test-dev', 'test', 'train+val', 'my_test']
 
         self.img_features = img_features
         self.label_pos_feats = label_pos_feats

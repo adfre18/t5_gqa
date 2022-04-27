@@ -26,9 +26,23 @@ if __name__ == '__main__':
     model = T5ModelGQA.from_pretrained('t5-base', config=t5_config)
     model.resize_token_embeddings(len(tokenizer))
 
+    with h5py.File('C:\GitRepo\T5_GQA\data\coco_and_gqa_test_box_features_ext.hdf5', "r") as f:
+        # List all groups
+        #print("Keys: %s" % f.keys())
+        a_group_key = list(f.keys())[0]
+        dict_with_examples = {}
+        for idx, key in enumerate(list(f.keys())):
+            if idx < 1000:
+                data_raw = torch.tensor(np.array(f[key]))
+                data = np.array(f[key])
+                dict_with_examples[key] = data
+            else:
+                break
+
     if args.do_train:
         train_dataset = GQADataset(args, 'train', img_features, tokenizer, label_pos_feats)
         filter_input_data(train_dataset, img_features)
+        #captions = GQADataset(args, 'my_test', img_features, tokenizer, label_pos_feats)
         eval_dataset = GQADataset(args, 'val', img_features, tokenizer, label_pos_feats)
         filter_input_data(eval_dataset, img_features)
         global_step, tr_loss = train(args, train_dataset, eval_dataset, model, tokenizer)
@@ -38,7 +52,7 @@ if __name__ == '__main__':
     t5_model = T5ModelGQA(t5_config)
     print()
     #img_features = torch.load('D:\Dokumenty\PhD\GQA\GitRep\data\\extracted_feats.pt')
-    with h5py.File('D:\Dokumenty\PhD\GQA\GitRep\data\\box_features_ext.hdf5', "r") as f:
+    with h5py.File('C:\GitRepo\T5_GQA\data\coco_and_gqa_test_box_features_ext.hdf5', "r") as f:
         # List all groups
         #print("Keys: %s" % f.keys())
         a_group_key = list(f.keys())[0]
